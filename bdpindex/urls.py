@@ -8,7 +8,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from bdpindex.searchengine import views
 
 urlpatterns = patterns('bdpindex.searchengine',
-    (r'^index/$', 'views.index'),
+    (r'^index/$', views.index),
     url(r'^admin/', include(admin.site.urls)),
 )
 urlpatterns += staticfiles_urlpatterns()

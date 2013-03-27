@@ -1,1 +1,8 @@
-index.html
+{% load url from future %}
+
+<form id="searchForm" action="{% url 'bdpindex.searchengine.views.index' %}"  method="post">{% csrf_token %}
+    <!--{{ form.as_p}}-->
+    <p> <input id="id_query_field" type="text" name="query_field" maxlength="1024" />
+    <input  type="submit" value="Search" id="id_search" />
+    </p>
+</form>

@@ -5,8 +5,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bdphpc',
-        'USER': 'bdphpc',
-        'PASSWORD': 'bdphpc', # unused with ident auth
+        'USER': 'postgres',
+        'PASSWORD': '', # unused with ident auth
         'HOST': '',
         'PORT': '',
     }
@@ -25,7 +25,7 @@ LOGGING = {
         'file': {
             'level':'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/cloudenabling/bdpindex.log',
+            'filename': '/var/log/bdp/bdpindex.log',
             'formatter': 'timestamped'
         },
     },

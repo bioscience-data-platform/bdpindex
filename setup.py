@@ -5,14 +5,15 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'docs/changes.rst')).read()
+version = '0.0.3'
 
 setup(
-    name="BDP",
-    version="0.99",
+    name="bdp",
+    version=version,
     url='http://github.com/mytardis/mytardis',
     license='MIT License',
     long_description=README + '\n\n' + CHANGES,
-    author='Ian Thomas',
+    author='Iman Yusuf',
     author_email='Iman.Yusuf@rmit.edu.au',
     packages=find_packages(),
     namespace_packages=['bdpindex'],
@@ -27,7 +28,6 @@ setup(
         'celery==2.5.5',           # Delayed tasks and queues
         'django-celery==2.5.5',
         'django-kombu',
-        'decisiontree',
         'django-mptt',
         'django-storages'
         ],
@@ -36,9 +36,4 @@ setup(
         'https://github.com/UQ-CMM-Mirage/django-celery/tarball/2.5#egg=django-celery-2.5.5',
         'https://github.com/defunkt/pystache/tarball/v0.5.2#egg=pystache-0.5.2'
     ],
-    entry_points = {
-       'console_scripts': [
-            'mc = cloudenable.mc:start',
-       ],
-    }
 )
