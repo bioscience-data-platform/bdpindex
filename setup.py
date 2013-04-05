@@ -29,7 +29,8 @@ setup(
         'django-celery==2.5.5',
         'django-kombu',
         'django-mptt',
-        'django-storages'
+        'django-storages',
+        'pysolr'
         ],
     dependency_links = [
         'https://github.com/dahlia/wand/tarball/warning-bugfix#egg=Wand-0.1.10',

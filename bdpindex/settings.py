@@ -6,7 +6,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bdphpc',
         'USER': 'postgres',
-        'PASSWORD': '', # unused with ident auth
+        'PASSWORD': 'randompasswordkadsgjadsgj', # unused with ident auth
         'HOST': '',
         'PORT': '',
     }
