@@ -1,11 +1,26 @@
+from oaipmh.client import Client
+from oaipmh import error
+from oaipmh.metadata import MetadataRegistry, oai_dc_reader
+from urllib2 import Request, urlopen, URLError, HTTPError
+from bdpindex import settings
 import pysolr
+import json
+import os
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 def index_data(search_phrase):
 
 # Setup a Solr instance. The timeout is optional.
     solr = pysolr.Solr('http://115.146.86.217:8080/solr')#, timeout=10)
-
+    solr.delete(id='a')
+    print 'doc1 deleted'
+    solr.delete(id='b')
+    print 'doc2 deleted'
+    solr.delete(id='c')
+    print 'doc3 deleted'
 # How you'd index data.
     solr.add([
         {
@@ -19,7 +34,7 @@ def index_data(search_phrase):
                            ' has decreased radically because of hunting and loss of habitat. '
             },
         {
-            "id": "doc_3",
+            "id": "doc_2",
               "title": "Tiger: The ferocious cats from India",
               "description": "The tiger (Panthera tigris) is the largest cat species, reaching "
                              "a total body length of up to 3.3 metres (11 ft) and weighing up "
@@ -27,7 +42,7 @@ def index_data(search_phrase):
                              "only the Polar bear and the Brown bear). I"
             },
         {
-            "id": "doc_2",
+            "id": "doc_3",
             "title": "Hyena: Wild dogs",
             "description": "Hyenas or Hyaenas (from Greek) are the animals "
                            "of the family Hyaenidae (pron.: //) of suborder"
@@ -51,9 +66,9 @@ def index_data(search_phrase):
     #return result
 
 
-def search(search_phrase, index_data=False):
+def search(search_phrase, index=False):
     solr = pysolr.Solr('http://115.146.86.217:8080/solr')#, timeout=10)
-    if index_data:
+    if index:
         index_data(search_phrase)
 
     results = solr.search(search_phrase, **{'hl': 'true',
@@ -102,3 +117,94 @@ def search(search_phrase, index_data=False):
         # ...or all documents.
         #solr.delete(q='*:*')
     return formatted_result
+
+
+
+class ErrorBase(Exception):
+    pass
+
+class OAIPMHError(ErrorBase):
+    """ The OAIPMH access failed"""
+    pass
+
+
+def pull_data(source):
+    list_of_records = []
+    registry = MetadataRegistry()
+    registry.registerReader('oai_dc', oai_dc_reader)
+    # Get list of public experiments at sources
+    registry = MetadataRegistry()
+    registry.registerReader('oai_dc', oai_dc_reader)
+    client = Client(source
+                    + "/apps/oaipmh/?verb=ListRecords&metadataPrefix=oai_dc", registry)
+    try:
+        exps_metadata = [meta
+                         for (header, meta, extra)
+                         in client.listRecords(metadataPrefix='oai_dc')]
+    except AttributeError as e:
+        msg = "Error reading experiment %s" % e
+        logger.error(msg)
+        raise OAIPMHError(msg)
+    except error.NoRecordsMatchError as e:
+        msg = "no public records found on source %s" % e
+        logger.warn(msg)
+        return
+    for exp_metadata in exps_metadata:
+        user_id = exp_metadata.getField('creator')[0]
+        user_profile = json.loads(_get_user(source, user_id))
+        data_tobe_indexed = dict(user_profile)
+        data_tobe_indexed['user_id'] = user_id
+        data_tobe_indexed.pop('id')
+
+
+        exp_id = exp_metadata.getField('identifier')[0]
+        description = exp_metadata.getField('description')[0]
+        title = exp_metadata.getField('title')[0]
+        if settings.EXPERIMENT_PATH[0] == '/':
+            settings.EXPERIMENT_PATH = settings.EXPERIMENT_PATH[1:]
+        experiment_url = os.path.join(source,
+                                      settings.EXPERIMENT_PATH % exp_id)
+
+        data_tobe_indexed['experiment_id'] = exp_id
+        data_tobe_indexed['experiment_title'] = title
+        data_tobe_indexed['experiment_description'] = description
+        data_tobe_indexed['experiment_url'] = experiment_url
+        for k, v in data_tobe_indexed.items():
+            logger.debug('%s = %s' % (k, v))
+        logger.debug('')
+        list_of_records.append(json.dumps(data_tobe_indexed))
+
+    return list_of_records
+
+
+def _get_user(source, user_id):
+    """
+    Retrieves information about the user_id at the source
+    """
+    try:
+        xmldata = getURL("%s/apps/reposproducer/user/%s/"
+                         % (source, user_id))
+    except HTTPError:
+        msg = "error getting user information"
+        logger.error(msg)
+        raise
+    return xmldata
+
+
+def getURL(source):
+    request = Request(source, {}, {})
+    response = urlopen(request)
+    xmldata = response.read()
+    return xmldata
+
+
+
+
+
+
+
+
+
+
+
+

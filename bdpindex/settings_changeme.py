@@ -224,6 +224,7 @@ CELERYBEAT_SCHEDULE = {
 
 djcelery.setup_loader()
 
+EXPERIMENT_PATH = '/experiment/view/%s/'
 
 
 

@@ -30,7 +30,8 @@ setup(
         'django-kombu',
         'django-mptt',
         'django-storages',
-        'pysolr'
+        'pysolr==2.1.0-beta',
+        'pyoai==2.4.4'
         ],
     dependency_links = [
         'https://github.com/dahlia/wand/tarball/warning-bugfix#egg=Wand-0.1.10',

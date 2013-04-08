@@ -1,11 +1,12 @@
 
 {% load url from future %}
-
-
     <p><H4> Search phrase:   </H4> {{ search_phrase }} </p>
     <H4> Search result </H4>
 {% for i in search_result %}
     <p> {{ i }} </p>
+{% endfor %}
+{%  for i in repos %}
+<p> Experiment info {{ i }} </p>
 {% endfor %}
 
 
