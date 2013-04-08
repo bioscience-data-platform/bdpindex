@@ -9,22 +9,27 @@ logger = logging.getLogger(__name__)
 
 def index(request):
     #form = SearchForm()
+    print "top index function"
     form = SearchForm(request.POST)
     print "index function"
 
     if form.is_valid():
         post_request_values = form.cleaned_data
         print post_request_values
-        query = post_request_values['query_field']
-        search_result = '\n'.join(search.search(query))
+        search_phrase = post_request_values['query_field']
+        search_result = (search.search(search_phrase,
+                                       index=False))
         print '%s ' % search_result
-        return render(request, 'displayresult.html',
-                  {'search_phrase': query,
-                   'search_result': search.search(query)})
-
+        repos = search.pull_data('http://115.146.85.142/')
     else:
-        search.index_data('cheers')
-        return render(request, 'index.html', {
-            'form': form})
+        print 'not valid form'
+        return render(request, 'index.html',
+                      {'form': form,
+                       })
+
+    return render(request, 'displayresult.html',
+                  {'search_phrase': search_phrase,
+                   'search_result': search_result,
+                   'repos': repos})
 
 

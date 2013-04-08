@@ -19,6 +19,9 @@ LOGGING = {
         'timestamped': {
             'format': '%(asctime)s-%(filename)s-%(lineno)s-%(levelname)s: %(message)s'
         },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
     },
 
     'handlers': {
@@ -28,12 +31,23 @@ LOGGING = {
             'filename': '/var/log/bdp/bdpindex.log',
             'formatter': 'timestamped'
         },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
     },
 
     'loggers': {
         'bdpindex.searchengine': {
             'handlers': ['file'],
             'level': 'INFO',
+            },
+        },
+    'loggers': {
+        'bdpindex.searchengine': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
             },
         },
 }
