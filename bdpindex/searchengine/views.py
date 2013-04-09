@@ -20,7 +20,7 @@ def index(request):
         search_result = (search.search(search_phrase,
                                        index=False))
         print '%s ' % search_result
-        repos = search.pull_data('http://115.146.85.142/')
+        #repos = search.pull_data('http://115.146.85.142/')
     else:
         print 'not valid form'
         return render(request, 'index.html',
@@ -30,6 +30,6 @@ def index(request):
     return render(request, 'displayresult.html',
                   {'search_phrase': search_phrase,
                    'search_result': search_result,
-                   'repos': repos})
+                   })
 
 

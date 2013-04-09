@@ -169,13 +169,16 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
     },
 
     'handlers': {
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'verbose'
         },
         'file': {
             'level':'DEBUG',
@@ -225,6 +228,7 @@ CELERYBEAT_SCHEDULE = {
 djcelery.setup_loader()
 
 EXPERIMENT_PATH = '/experiment/view/%s/'
+PYSOLR_SERVER = 'http://115.146.86.217:8080/solr'
 
 
 
