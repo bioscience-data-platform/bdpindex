@@ -158,7 +158,7 @@ class MyTardisParameter(models.Model):
         try:
             val = self.name.get_value(self.value)
         except ValueError:
-            logger.debug('Got bad value for paramter %s' % self.name)
+            logger.debug('Got bad value for parameter %s' % self.name)
             raise
         return val
 

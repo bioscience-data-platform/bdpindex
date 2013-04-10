@@ -2,7 +2,10 @@ from oaipmh.client import Client
 from oaipmh import error
 from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from urllib2 import Request, urlopen, URLError, HTTPError
+
+from bdpindex.searchengine import models
 from bdpindex import settings
+
 import pysolr
 import json
 import os
@@ -141,11 +144,27 @@ def index_data(records):
     solr.optimize()
 
 
-
-
-
-
-
+def get_all_mytardis_deployment():
+    mytaris_profiles = models.MyTardisProfile.objects.all()
+    all_deployments = []
+    for profile in mytaris_profiles:
+        deployment = {'url': profile.url}
+        deployment['institution'] = profile.institution
+        try:
+            paramsets = models.MyTardisProfileParameterSet \
+                .objects.filter(mytardis_profile=profile)
+            for paramset in paramsets:
+            #deployment['']
+                print 'paramset', paramset
+                params = models.MyTardisParameter.objects.filter(parameter_set=paramset)
+                for param in params:
+                    name = str(param.name).split('(')
+                    deployment[name[0]] = param.value
+        except Exception, e:
+            print e
+        all_deployments.append(deployment)
+    logger.debug('all_deployments=%s' % all_deployments)
+    return all_deployments
 
 
 
