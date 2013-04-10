@@ -12,6 +12,16 @@ import logging
 logger = logging.getLogger(__name__)
 PYSOLR_SUFFIX = '_txt'
 
+
+class ErrorBase(Exception):
+    pass
+
+
+class OAIPMHError(ErrorBase):
+    """ The OAIPMH access failed"""
+    pass
+
+
 def search(search_phrase, index=False):
     solr = pysolr.Solr('http://115.146.86.217:8080/solr')#, timeout=10)
     if index:
@@ -43,15 +53,6 @@ def search(search_phrase, index=False):
         formatted_result.append("--Owner: %s" % name)
         formatted_result.append("--Email: %s" % email[0])
     return formatted_result
-
-
-
-class ErrorBase(Exception):
-    pass
-
-class OAIPMHError(ErrorBase):
-    """ The OAIPMH access failed"""
-    pass
 
 
 def pull_data(source):

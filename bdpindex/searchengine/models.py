@@ -121,6 +121,52 @@ class ParameterName(models.Model):
         return res
 
 
+class MyTardisProfile(models.Model):
+    url = models.URLField(verify_exists=False , max_length=400, blank=False,
+                          help_text='A URI that uniquely '
+                                    'identifies MyTardis deployment')
+    institution = models.CharField(max_length=255, blank=False,
+                                   help_text='Institution where MyTardis is deployed')
+    PROFILE_SCHEMA_NS = "http://www.rmit.edu.au/schemas/mytardis_profile"
+
+    def __unicode__(self):
+        return 'Data at %s, accessible via %s' % (
+        self.institution, self.url)
+
+
+class MyTardisProfileParameterSet(models.Model):
+    mytardis_profile = models.ForeignKey(MyTardisProfile, unique=True,
+                                         help_text='Information about MyTardis')
+    schema = models.ForeignKey(Schema, verbose_name='Schema')
+    ranking = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['-ranking']
+
+
+class MyTardisParameter(models.Model):
+    name = models.ForeignKey(ParameterName, verbose_name='Parameter name')
+    parameter_set = models.ForeignKey(MyTardisProfileParameterSet,
+                                      verbose_name='Paramter set')
+    value = models.TextField(blank=True, verbose_name='Parameter Value',
+                             help_text='The value of this parameter')
+
+    def __unicode__(self):
+        return u'%s %s %s' % (self.name, self.parameter_set, self.value)
+
+    def get_value(self,):
+        try:
+            val = self.name.get_value(self.value)
+        except ValueError:
+            logger.debug('Got bad value for paramter %s' % self.name)
+            raise
+        return val
+
+    class Meta:
+        ordering = ["name"]
+
+
+
 class ExperimentProfile(models.Model):
     experiment_id = models.IntegerField(help_text='Experiment ID')
     title = models.CharField(max_length=255, help_text='Experiment Title')

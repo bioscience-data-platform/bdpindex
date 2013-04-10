@@ -25,50 +25,36 @@ class Command(BaseCommand):
             print "action aborted by user"
             return
 
-        self.group, _ = Group.objects.get_or_create(name="standarduser")
-        self.group.save()
-
-        #for model_name in ('experimentprofileparameter', 'experimentprofileparameterset'):
-         #   print ('Model Name %s' % model_name)
-            #add_model = Permission.objects.get(codename="add_%s" % model_name)
-          #  change_model = Permission.objects.get(codename="change_%s" % model_name)
-            #delete_model = Permission.objects.get(codename="delete_%s" % model_name)
-            #self.group.permissions.add(add_model)
-           # self.group.permissions.add(change_model)
-            #self.group.permissions.add(delete_model)
-
-        self.group.save()
-
-
-
-
-        # Create the schemas for template parameters or config info
-        # specfied in directive arguments
         for ns, name, desc in [(models.ExperimentProfile.PROFILE_SCHEMA_NS,
-                                "bdp_index", "Information about "),
-
-        ]:
+                                "Experiment Schema", "Information about experiment"),
+                               (models.MyTardisProfile.PROFILE_SCHEMA_NS,
+                                "MyTardis Schema", "Schema for MyTardis profile"),
+                               ]:
             sch, _ = models.Schema.objects.get_or_create(namespace=ns, name=name, description=desc)
             logger.debug("sch=%s" % sch)
 
         experiment_schema = models.Schema.objects.get(namespace=models.ExperimentProfile.PROFILE_SCHEMA_NS)
+        mytardis_schema = models.Schema.objects.get(namespace=models.MyTardisProfile.PROFILE_SCHEMA_NS)
 
-
-
-        self.PARAMTYPE = {'description': models.ParameterName.STRING,
-                          'location': models.ParameterName.STRING,
-                          }
-
-        for name, param_type in self.PARAMTYPE.items():
-            param_name, created = models.ParameterName.objects.get_or_create(schema=experiment_schema,
-                                                                       name=name,
-                                                                       type=self.PARAMTYPE[name])
+        self.PARAM_TYPE_SCHEMA = {'description': [models.ParameterName.STRING,
+                                                  experiment_schema],
+                                  'location': [models.ParameterName.STRING,
+                                               experiment_schema],
+                                  'source of curated data': [models.ParameterName.STRING,
+                                                             mytardis_schema],
+                                  'remark': [models.ParameterName.STRING,
+                                             mytardis_schema],
+                                  }
+        for name, param_type_schema in self.PARAM_TYPE_SCHEMA.items():
+            param_type_schema = self.PARAM_TYPE_SCHEMA[name]
+            type = param_type_schema[0]
+            schema = param_type_schema[1]
+            param_name, created = models.ParameterName.objects.get_or_create(
+                schema=schema, name=name, type=type)
             if not created:
-                models.ParameterName.objects.filter(name=name).update(type=param_type)
+                models.ParameterName.objects.filter(name=name).update(type=type)
             logger.debug(param_name)
 
-
-        print "done"
 
     def handle(self, *args, **options):
         self.setup()

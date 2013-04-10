@@ -8,23 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'ExperimentProfile.description'
-        db.delete_column('searchengine_experimentprofile', 'description')
-
-        # Deleting field 'ExperimentProfile.location'
-        db.delete_column('searchengine_experimentprofile', 'location')
+        # Adding field 'MyTardisProfile.source_of_curated_data'
+        db.add_column('searchengine_mytardisprofile', 'source_of_curated_data',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Adding field 'ExperimentProfile.description'
-        db.add_column('searchengine_experimentprofile', 'description',
-                      self.gf('django.db.models.fields.TextField')(default='', blank=True),
-                      keep_default=False)
-
-        # Adding field 'ExperimentProfile.location'
-        db.add_column('searchengine_experimentprofile', 'location',
-                      self.gf('django.db.models.fields.CharField')(default='123', max_length=255),
-                      keep_default=False)
+        # Deleting field 'MyTardisProfile.source_of_curated_data'
+        db.delete_column('searchengine_mytardisprofile', 'source_of_curated_data')
 
 
     models = {
@@ -45,6 +37,27 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "['-ranking']", 'object_name': 'ExperimentProfileParameterSet'},
             'experiment_profile': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['searchengine.ExperimentProfile']", 'unique': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'ranking': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'schema': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['searchengine.Schema']"})
+        },
+        'searchengine.mytardisparameter': {
+            'Meta': {'ordering': "['name']", 'object_name': 'MyTardisParameter'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['searchengine.ParameterName']"}),
+            'parameter_set': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['searchengine.MyTardisProfileParameterSet']"}),
+            'value': ('django.db.models.fields.TextField', [], {'blank': 'True'})
+        },
+        'searchengine.mytardisprofile': {
+            'Meta': {'object_name': 'MyTardisProfile'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'institution': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'source_of_curated_data': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'url': ('django.db.models.fields.URLField', [], {'max_length': '400'})
+        },
+        'searchengine.mytardisprofileparameterset': {
+            'Meta': {'ordering': "['-ranking']", 'object_name': 'MyTardisProfileParameterSet'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'mytardis_profile': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['searchengine.MyTardisProfile']", 'unique': 'True'}),
             'ranking': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'schema': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['searchengine.Schema']"})
         },
