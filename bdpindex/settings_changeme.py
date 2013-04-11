@@ -63,6 +63,7 @@ STATIC_DOC_ROOT = path.join(path.dirname(__file__),
 
 #STATIC_URL = path.join(path.dirname(__file__),'smra_portal/site_media').replace('\\','/')
 #STATIC_URL = path.join('/site_media/').replace('\\','/')
+STATIC_URL = '/static/'
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"

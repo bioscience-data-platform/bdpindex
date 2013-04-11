@@ -1,12 +1,56 @@
-
+{% extends 'base.html' %}
 {% load url from future %}
-    <p><H4> Search phrase:   </H4> {{ search_phrase }} </p>
-    <H4> Search result </H4>
-{% for i in search_result %}
-    <p> {{ i }} </p>
-{% endfor %}
-{%  for i in repos %}
-<p> Experiment info {{ i }} </p>
-{% endfor %}
+{% load staticfiles %}
 
+{% block content %}
+    <div class="row-fluid" style="margin-bottom: 0px;">
+        <div class="span3">
+            <div class="span1"></div>
+            <div class="span11">
+                <a href=""><img src="{% static "searchengine/img/bdp-90-trans.png"  %}" style="height: 80px; margin-left: 0px;" alt=""></a>
+            </div>
+        </div>
+        <div class="span9" style="margin-top: 10px;">
+            <div class="span4"></div>
+            <div class="span8">
+                <div class="well">
+                    <form id="searchForm" action="{% url 'bdpindex.searchengine.views.index' %}"  method="post">{% csrf_token %}
+                        <input class="input-xlarge"  id="id_query_field" style="margin-bottom: 0;" type="text" name="query_field" placeholder="eg. Malaria">
+                        <input type="submit" class="btn btn-primary" id="id_search" value=Search>
+                        <!--i class="icon-search"></i> Search--->
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span12">
+            <h3> {{ total_search_hits }} search results for {{ search_phrase }} </h3>
+            {% for i in search_result %}
+                <div class="well">
+                    <h2>
+                        <a href={{ i.url }} target="_blank">
+                            {{ i.title }} </a>
+                    </h2>
+
+                    <h2 style="line-height: 20px;"><small><span property="dc:creator">{{ i.owner }}</span></small></h2>
+                    <blockquote>
+                        <small>6 months ago</small>
+                        <br/>
+                        <p>
+                            <span id="abstractText" class="">
+                                <!--DOI for this data: <strong><a href="http://dx.doi.org/10.5072/03/50231A4676583">10.5072/03/50231A4676583</a></strong><br-->
+                                {{ i.description }}</span>
+                        </p>
+                    </blockquote>
+                    <em>From <a href="http://vera187.its.monash.edu.au/" target="_blank">Monash (Synchrotron Data)</a></em>
+                </div>
+            {% endfor %}
+    </div>
+    </div>
+
+
+{% endblock %}
 

@@ -30,6 +30,8 @@ def index(request):
     return render(request, 'displayresult.html',
                   {'search_phrase': search_phrase,
                    'search_result': search_result,
+                   'total_search_hits': len(search_result),
+                   'dictionary': {'a': 1}
                    })
 
 

@@ -32,14 +32,9 @@ def search(search_phrase, index=False):
 
     results = solr.search(search_phrase, **{'hl': 'true',
                                                'hl.fragsize': 10,})
-    formatted_result = []
-    found = 'Found'
-    if not results:
-        found = 'Not Found'
-    formatted_result.append(found)
-    counter = 0
+    search_result = []
     for result in results:
-        counter += 1
+        formatted_result = {}
         print 'result', result
         first_name = result['first_name' + PYSOLR_SUFFIX]
         last_name = result['last_name' + PYSOLR_SUFFIX]
@@ -49,13 +44,13 @@ def search(search_phrase, index=False):
         description = result['experiment_description' + PYSOLR_SUFFIX]
         url = result['experiment_url' + PYSOLR_SUFFIX]
 
-        formatted_result.append("--RESULT: %d" % counter)
-        formatted_result.append("--Title: %s" % title[0])
-        formatted_result.append("--Description: %s" % description[0])
-        formatted_result.append("--URL: %s" % url[0])
-        formatted_result.append("--Owner: %s" % name)
-        formatted_result.append("--Email: %s" % email[0])
-    return formatted_result
+        formatted_result['owner'] = name
+        formatted_result['email'] = email[0]
+        formatted_result['title'] = title[0]
+        formatted_result['description'] = description[0]
+        formatted_result['url'] = url[0]
+        search_result.append(formatted_result)
+    return search_result
 
 
 def pull_data(source):

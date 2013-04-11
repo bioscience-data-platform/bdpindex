@@ -1,8 +1,52 @@
+{% extends 'base.html' %}
 {% load url from future %}
+{% load staticfiles %}
 
-<form id="searchForm" action="{% url 'bdpindex.searchengine.views.index' %}"  method="post">{% csrf_token %}
-    <!--{{ form.as_p}}-->
-    <p> <input id="id_query_field" type="text" name="query_field" maxlength="1024" />
-    <input  type="submit" value="Search" id="id_search" />
-    </p>
-</form>
+{%  block content %}
+    <div class="row-fluid" style="margin-bottom: 0px;">
+        <div class="span12">
+            <div class="span1"></div>
+            <div class="span11">
+                <a href=""><img src="{% static "searchengine/img/bdp-90-trans.png" %}" style="margin-left: 0px;" alt=""></a>
+            </div>
+        </div>
+        <div class="span3" style="text-align: right;"></div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span8">
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="well">
+                        <h2>Find experiment data</h2>
+                        <p>Search for datasets collected from scientific instruments and high performance computing resources around Australia.</p>
+
+                        <form id="searchForm" action="{% url 'bdpindex.searchengine.views.index' %}"  method="post">{% csrf_token %}
+                            <input class="input-xlarge"  id="id_query_field" style="margin-bottom: 0;" type="text" name="query_field" placeholder="eg. Malaria">
+                            <input type="submit" class="btn btn-primary" id="id_search" value=Search>
+                                <!--i class="icon-search"></i> Search--->
+
+                        </form>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="span4">
+            <div class="well">
+                <h4>Data Sources..</h4>
+                <ul style="font-weight: bold;">
+                    <li><a href="http://vera183.its.monash.edu.au/" target="_blank">Monash Proteomics</a></li>
+                    <li><a href="http://vera187.its.monash.edu.au/" target="_blank">Monash (Synchrotron Data)</a></li>
+                    <li><a href="http://115.146.85.247/" target="_blank">Monash Biomedical Imaging</a></li>
+                </ul>
+                <em>Data is sourced from the <a href="http://github.com/mytardis/mytardis/" target="_blank">MyTardis</a> data management system.</em>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

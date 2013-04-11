@@ -1,0 +1,33 @@
+{% load url from future %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+
+<title>Bioscience Data Platform: TARDIS In The Cloud</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<style type="text/css">body{padding-top:10px;padding-bottom:40px}</style>
+<link rel="stylesheet" type="text/css" href="{% static "bootstrap/css/bootstrap.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static "bootstrap/css/bootstrap-responsive.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static "searchengine/css/default.css" %}">
+
+</head>
+<body>
+<div class="container">
+
+    <div class="row-fluid" style="margin-bottom: 0px;">
+        <div align="right"><a class="btn" href="#">Log in with AAF</a> (soon!)</div>
+
+        {% block content %} {% endblock %}
+        
+    <hr>
+        <footer>
+            <div class="pull-left"><img src="http://nectar.org.au/sites/default/files/logo-small.png">
+                <small><p>The Bioscience Data Platform acknowledges funding from the <a href="http://www.nectar.org.au">NeCTAR project</a>.</p></small></div>
+            <div class="pull-right"><a href="x">Link 1</a> · <a href="y">Link 2</a></div>
+        </footer>
+    </div>
+
+</body>
+</html>
