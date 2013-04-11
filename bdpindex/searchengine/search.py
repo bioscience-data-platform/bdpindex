@@ -37,18 +37,24 @@ def search(search_phrase, index=False):
     search_result = []
     for result in results:
         formatted_result = {}
-        print 'result', result
-        first_name = result['first_name' + PYSOLR_SUFFIX]
-        last_name = result['last_name' + PYSOLR_SUFFIX]
-        name = first_name[0] + " " + last_name[0]
-        email = result['email' + PYSOLR_SUFFIX]
+        print 'result ---', result
+        try:
+            first_name = result['first_name' + PYSOLR_SUFFIX]
+            last_name = result['last_name' + PYSOLR_SUFFIX]
+            name = first_name[0] + " " + last_name[0]
+        except Exception, e:
+            try:
+                name = result['email' + PYSOLR_SUFFIX]
+            except Exception, e:
+                name = result['username' + PYSOLR_SUFFIX]
+            name = name[0]
+
         title = result['experiment_title' + PYSOLR_SUFFIX]
         description = result['experiment_description' + PYSOLR_SUFFIX]
         url = result['experiment_url' + PYSOLR_SUFFIX]
         date = result['experiment_date' + PYSOLR_SUFFIX]
 
         formatted_result['owner'] = name
-        formatted_result['email'] = email[0]
         formatted_result['title'] = title[0]
         formatted_result['description'] = description[0]
         formatted_result['url'] = url[0]
@@ -74,9 +80,6 @@ def pull_data(source):
     client = Client(source
                     + "/apps/oaipmh/?verb=ListRecords&metadataPrefix=oai_dc", registry)
     try:
-        #exps_metadata = [meta
-        #                 for (header, meta, extra)
-        #                 in client.listRecords(metadataPrefix='oai_dc')]
         exps_date = []
         exps_metadata = []
         for (header, meta, extra) in client.listRecords(metadataPrefix='oai_dc'):
@@ -154,7 +157,7 @@ def index_data(records):
             dynamic_key = str(k) + PYSOLR_SUFFIX
             if k == 'id':
                 dynamic_key = str(k)
-            new_dict[dynamic_key] = str(v)
+            new_dict[dynamic_key] = v.encode('utf-8')
             logger.debug('k=%s v=%s' % (dynamic_key, v))
         record_to_index.append(new_dict)
     solr.add(record_to_index)
@@ -165,21 +168,10 @@ def get_all_mytardis_deployment():
     mytaris_profiles = models.MyTardisProfile.objects.all()
     all_deployments = []
     for profile in mytaris_profiles:
-        deployment = {'url': str(profile.url)}
-        deployment['institution'] = str(profile.institution)
-        try:
-            paramsets = models.MyTardisProfileParameterSet \
-                .objects.filter(mytardis_profile=profile)
-            for paramset in paramsets:
-            #deployment['']
-                print 'paramset', paramset
-                params = models.MyTardisParameter.objects.filter(parameter_set=paramset)
-                for param in params:
-                    name = str(param.name).split('(')
-                    name = name[0].strip()
-                    deployment[name] = str(param.value)
-        except Exception, e:
-            print e
+        url = str(profile.url)
+        deployment = {'url': url}
+        hostname = "http://" + urlparse(url).hostname + '/'
+        deployment.update(get_mytardis_deployment_info(hostname))
         all_deployments.append(deployment)
     logger.debug('all_deployments=%s' % all_deployments)
     return all_deployments

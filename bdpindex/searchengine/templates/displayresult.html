@@ -27,7 +27,7 @@
 
     <div class="row-fluid">
         <div class="span12">
-            <h3> {{ total_search_hits }} search results for {{ search_phrase }} </h3>
+            <h3> {{ total_search_hits }} search  results for {{ search_phrase }} </h3>
             {% for i in search_result %}
                 <div class="well">
                     <h2>
@@ -41,7 +41,6 @@
                         <br/>
                         <p>
                             <span id="abstractText" class="">
-                                <!--DOI for this data: <strong><a href="http://dx.doi.org/10.5072/03/50231A4676583">10.5072/03/50231A4676583</a></strong><br-->
                                 {{ i.description|safe }}
                             </span>
                         </p>
