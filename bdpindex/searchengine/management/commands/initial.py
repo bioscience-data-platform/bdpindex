@@ -40,7 +40,7 @@ class Command(BaseCommand):
                                                   experiment_schema],
                                   'location': [models.ParameterName.STRING,
                                                experiment_schema],
-                                  'source of curated data': [models.ParameterName.STRING,
+                                  'curated_data_source': [models.ParameterName.STRING,
                                                              mytardis_schema],
                                   'remark': [models.ParameterName.STRING,
                                              mytardis_schema],

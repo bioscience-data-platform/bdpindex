@@ -2,6 +2,7 @@ from oaipmh.client import Client
 from oaipmh import error
 from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from urllib2 import Request, urlopen, URLError, HTTPError
+from urlparse import urlparse
 
 from bdpindex.searchengine import models
 from bdpindex import settings
@@ -49,6 +50,10 @@ def search(search_phrase, index=False):
         formatted_result['title'] = title[0]
         formatted_result['description'] = description[0]
         formatted_result['url'] = url[0]
+
+        hostname = "http://" + urlparse(url[0]).hostname + '/'
+        logger.debug('hostname=%s' % hostname)
+        formatted_result.update(get_mytardis_deployment_info(hostname))
         search_result.append(formatted_result)
     return search_result
 
@@ -138,13 +143,13 @@ def index_data(records):
     solr.add(record_to_index)
     solr.optimize()
 
-
+#TODO: refactor see get_mytardis_deployment_info at /bdpindex/searchengine/search.py:170
 def get_all_mytardis_deployment():
     mytaris_profiles = models.MyTardisProfile.objects.all()
     all_deployments = []
     for profile in mytaris_profiles:
-        deployment = {'url': profile.url}
-        deployment['institution'] = profile.institution
+        deployment = {'url': str(profile.url)}
+        deployment['institution'] = str(profile.institution)
         try:
             paramsets = models.MyTardisProfileParameterSet \
                 .objects.filter(mytardis_profile=profile)
@@ -154,12 +159,32 @@ def get_all_mytardis_deployment():
                 params = models.MyTardisParameter.objects.filter(parameter_set=paramset)
                 for param in params:
                     name = str(param.name).split('(')
-                    deployment[name[0]] = param.value
+                    name = name[0].strip()
+                    deployment[name] = str(param.value)
         except Exception, e:
             print e
         all_deployments.append(deployment)
     logger.debug('all_deployments=%s' % all_deployments)
     return all_deployments
+
+
+def get_mytardis_deployment_info(url):
+    mytardis_info = {}
+    profile = models.MyTardisProfile.objects.get(url=url)
+    mytardis_info['institution'] = profile.institution
+    try:
+        paramsets = models.MyTardisProfileParameterSet \
+            .objects.filter(mytardis_profile=profile)
+        for paramset in paramsets:
+            params = models.MyTardisParameter.objects.filter(parameter_set=paramset)
+            for param in params:
+                name = str(param.name).split('(')
+                name = name[0].strip()
+                mytardis_info[name] = param.value
+    except Exception, e:
+        print e
+    return mytardis_info
+
 
 
 

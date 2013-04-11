@@ -25,7 +25,6 @@
                             <input class="input-xlarge"  id="id_query_field" style="margin-bottom: 0;" type="text" name="query_field" placeholder="eg. Malaria">
                             <input type="submit" class="btn btn-primary" id="id_search" value=Search>
                                 <!--i class="icon-search"></i> Search--->
-
                         </form>
                     </div>
                 </div>
@@ -38,11 +37,14 @@
         </div>
         <div class="span4">
             <div class="well">
-                <h4>Data Sources..</h4>
+                <h4>Data Sources</h4>
                 <ul style="font-weight: bold;">
-                    <li><a href="http://vera183.its.monash.edu.au/" target="_blank">Monash Proteomics</a></li>
-                    <li><a href="http://vera187.its.monash.edu.au/" target="_blank">Monash (Synchrotron Data)</a></li>
-                    <li><a href="http://115.146.85.247/" target="_blank">Monash Biomedical Imaging</a></li>
+                    {% for i in all_mytardis_deployment %}
+                        <li><a href="{{ i.url }}" target="_blank">{{ i.institution }}
+                        {% if i.curated_data_source %} ({{ i.curated_data_source }} Data) {% endif %}
+                        </a>
+                        </li>
+                    {% endfor %}
                 </ul>
                 <em>Data is sourced from the <a href="http://github.com/mytardis/mytardis/" target="_blank">MyTardis</a> data management system.</em>
             </div>

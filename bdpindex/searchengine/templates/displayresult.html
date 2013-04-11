@@ -3,7 +3,7 @@
 {% load staticfiles %}
 
 {% block content %}
-    <div class="row-fluid" style="margin-bottom: 0px;">
+    <div class="row-fluid" style="margin-bottom: 0px;" xmlns="http://www.w3.org/1999/html">
         <div class="span3">
             <div class="span1"></div>
             <div class="span11">
@@ -31,7 +31,7 @@
             {% for i in search_result %}
                 <div class="well">
                     <h2>
-                        <a href={{ i.url }} target="_blank">
+                        <a href="{{ i.url }}" target="_blank">
                             {{ i.title }} </a>
                     </h2>
 
@@ -45,12 +45,13 @@
                                 {{ i.description }}</span>
                         </p>
                     </blockquote>
-                    <em>From <a href="http://vera187.its.monash.edu.au/" target="_blank">Monash (Synchrotron Data)</a></em>
+                    <em>From <a href="http://vera187.its.monash.edu.au/" target="_blank"> {{ i.institution }}
+                        {% if i.curated_data_source %} ({{ i.curated_data_source }} Data) {% endif %}
+                        </a>
+                    </em>
                 </div>
             {% endfor %}
     </div>
     </div>
-
-
 {% endblock %}
 
