@@ -37,12 +37,13 @@
 
                     <h2 style="line-height: 20px;"><small><span property="dc:creator">{{ i.owner }}</span></small></h2>
                     <blockquote>
-                        <small>6 months ago</small>
+                        <small>{{ i.date|timesince }} ago</small>
                         <br/>
                         <p>
                             <span id="abstractText" class="">
                                 <!--DOI for this data: <strong><a href="http://dx.doi.org/10.5072/03/50231A4676583">10.5072/03/50231A4676583</a></strong><br-->
-                                {{ i.description }}</span>
+                                {{ i.description|safe }}
+                            </span>
                         </p>
                     </blockquote>
                     <em>From <a href="http://vera187.its.monash.edu.au/" target="_blank"> {{ i.institution }}

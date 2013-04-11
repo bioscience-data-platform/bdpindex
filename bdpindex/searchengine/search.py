@@ -3,6 +3,7 @@ from oaipmh import error
 from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from urllib2 import Request, urlopen, URLError, HTTPError
 from urlparse import urlparse
+from datetime import datetime
 
 from bdpindex.searchengine import models
 from bdpindex import settings
@@ -44,12 +45,17 @@ def search(search_phrase, index=False):
         title = result['experiment_title' + PYSOLR_SUFFIX]
         description = result['experiment_description' + PYSOLR_SUFFIX]
         url = result['experiment_url' + PYSOLR_SUFFIX]
+        date = result['experiment_date' + PYSOLR_SUFFIX]
 
         formatted_result['owner'] = name
         formatted_result['email'] = email[0]
         formatted_result['title'] = title[0]
         formatted_result['description'] = description[0]
         formatted_result['url'] = url[0]
+
+        date_format = '%Y-%m-%d %H:%M:%S'
+        date_data_curated = datetime.strptime(date[0], date_format)
+        formatted_result['date'] = date_data_curated
 
         hostname = "http://" + urlparse(url[0]).hostname + '/'
         logger.debug('hostname=%s' % hostname)
@@ -68,9 +74,16 @@ def pull_data(source):
     client = Client(source
                     + "/apps/oaipmh/?verb=ListRecords&metadataPrefix=oai_dc", registry)
     try:
-        exps_metadata = [meta
-                         for (header, meta, extra)
-                         in client.listRecords(metadataPrefix='oai_dc')]
+        #exps_metadata = [meta
+        #                 for (header, meta, extra)
+        #                 in client.listRecords(metadataPrefix='oai_dc')]
+        exps_date = []
+        exps_metadata = []
+        for (header, meta, extra) in client.listRecords(metadataPrefix='oai_dc'):
+            exps_date.append(str(header._datestamp))
+            exps_metadata.append(meta)
+            logger.debug('Date=%s' % header._datestamp)
+
     except AttributeError as e:
         msg = "Error reading experiment %s" % e
         logger.error(msg)
@@ -79,6 +92,8 @@ def pull_data(source):
         msg = "no public records found on source %s" % e
         logger.warn(msg)
         return
+
+    exp_counter = 0
     for exp_metadata in exps_metadata:
         user_id = exp_metadata.getField('creator')[0]
         user_profile = json.loads(_get_user(source, user_id))
@@ -98,6 +113,8 @@ def pull_data(source):
         data_tobe_indexed['experiment_description'] = description
         data_tobe_indexed['experiment_url'] = experiment_url
         data_tobe_indexed['id'] = experiment_url
+        data_tobe_indexed['experiment_date'] = exps_date[exp_counter]
+        exp_counter += 1
         for k, v in data_tobe_indexed.items():
             logger.debug('%s = %s' % (k, v))
         logger.debug('')
